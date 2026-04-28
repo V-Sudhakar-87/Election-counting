@@ -80,7 +80,7 @@ if (lang === "ta") {
 
 let currentLang = localStorage.getItem("lang") || "ta";
 
-document.getElementById("translateBtn").onclick = () => {
+/*document.getElementById("translateBtn").onclick = () => {
   
 
  if (currentLang === "en") {
@@ -108,6 +108,10 @@ document.getElementById("translateBtn").onclick = () => {
     hideGoogleBar();
   }
 }, 1000);
+};*/
+document.getElementById("translateBtn").onclick = (e) => {
+  e.preventDefault(); // 🔥 block click
+  return false;
 };
 function fixTamilWords() {
   if (localStorage.getItem("lang") !== "ta") return;
@@ -200,8 +204,9 @@ function updateSwitchUI() {
 }
 
 
-langSwitch.onclick = () => {
-  document.getElementById("translateBtn").click();
+langSwitch.onclick = (e) => {
+  e.preventDefault();
+  return false;
 };
 
 
