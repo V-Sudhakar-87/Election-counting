@@ -1558,7 +1558,9 @@ body:not(.light) .team-title {
 .popular-info {
   flex: 1;
 }
-
+.notranslate {
+  translate: no;
+}
 .popular-info h4 {
   margin: 0;
   font-size: 14px;
