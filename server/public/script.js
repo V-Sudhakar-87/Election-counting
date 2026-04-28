@@ -95,7 +95,7 @@ document.getElementById("translateBtn").onclick = () => {
     // 👉 Tamil → ORIGINAL English
     currentLang = "en";
     localStorage.setItem("lang", "en");
-
+    stopTamilFix();
     document.cookie =
       "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     location.reload();
@@ -103,9 +103,11 @@ document.getElementById("translateBtn").onclick = () => {
   updateSwitchUI();
 
   hideGoogleBar();
-  setTimeout(hideGoogleBar, 50);
-  setTimeout(hideGoogleBar, 200);
-  setTimeout(hideGoogleBar, 500);
+  setInterval(() => {
+  if (localStorage.getItem("lang") === "ta") {
+    hideGoogleBar();
+  }
+}, 1000);
 };
 function fixTamilWords() {
   if (localStorage.getItem("lang") !== "ta") return;
