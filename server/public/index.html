@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>TN Election</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="light">
+
+<header class="header">
+  
+  <!-- LEFT -->
+  <div class="logo">
+    <span class="tn">TN</span>
+    <div class="title">
+      <h1 id="titleText">Election 2026</h1>
+      <span class="live-dot"></span><small id="subText">Live</small>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="actions">
+
+    <!-- TRANSLATE DROPDOWN -->
+    <div class="lang-control">
+
+  <!-- 🌐 ICON -->
+    <div class="lang-switch" id="langSwitch" title="Toggle Tamil / English">
+    <div class="switch-track">
+      <div class="switch-thumb"></div>
+    </div>
+  </div>
+  <button class="lang-icon" id="translateBtn" title="Change Language">
+    <i class="fa-solid fa-globe"></i>
+  </button>
+
+  <!-- 🔥 SWITCH -->
+ 
+
+</div>
+
+    <!-- THEME -->
+    <button id="themeToggle" class="theme-btn">
+  <i class="fa-solid fa-sun fa-2x"></i>
+</button>
+
+  </div>
+
+</header>
+<div class="ticker" >
+  <div class="ticker-text">
+    <img src="image/college.jpeg" class="ticker-logo">
+    Einstein College of Engineering- Department of CSE -TN Election_2026 Live Dashboard | தேர்தல் 2026 - நேரடி எண்ணிக்கை
+  </div>
+  
+</div>
+
+<section class="hero">
+
+  <h1 class="hero-heading">
+  Tamil Nadu Election 
+  <span class="hero-live">Live Counting</span>
+</h1>
+ <br>
+  <p>
+    Explore all 234 constituencies, leading candidates and live results across Tamil Nadu — district by district.
+  </p>
+  <div class="stats">
+
+    <div class="card">
+      <h2>234</h2>
+      <small>SEATS</small>
+    </div>
+
+    <div class="card">
+      <h2 id="candidateCount">0</h2>
+      <small>CANDIDATES</small>
+    </div>
+
+    
+
+    <div class="card">
+      <h2  id="leadingParty">waiting</h2>
+      <small>LEADING PARTY</small>
+    </div>
+
+  </div>
+
+
+</section>
+<section class="cm-section">
+
+  <h2>Chief Minister Candidates</h2>
+
+  <div class="cm-grid" id="cmGrid">
+    <!-- JS la cards generate aagum -->
+  </div>
+
+</section>
+<section class="section">
+
+  <div class="map-container">
+
+    <!-- 🔥 HEADER -->
+    <div class="map-title">
+   <h2 class="map-heading">
+  Tamil Nadu Election 2026 
+  <span class="live-text">Live Results Map</span>
+</h2>
+    </div>
+
+    <!-- 🔍 CENTER SEARCH -->
+    <div class="map-search-box">
+      <input 
+        type="text" 
+        id="mapSearch" 
+        placeholder="Search constituency..."
+      >
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
+
+ 
+  <div id="mapTooltip" class="map-tooltip"></div>
+    <!-- 🗺️ MAP -->
+    <div class="map-area">
+
+      <svg id="tnMap"></svg>
+
+      <div class="zoom-controls">
+  <button onclick="zoomIn()">+</button>
+  <button onclick="zoomOut()">−</button>
+</div>
+<!-- 🔥 LEGEND OUTSIDE MAP -->
+<div class="map-legend">
+  <div onclick="openAlliance('SPA')">
+    <span style="background:#e11d48"></span> SPA
+  </div>
+  <div onclick="openAlliance('NDA')">
+    <span style="background:#16a34a"></span> NDA
+  </div>
+  <div onclick="openAlliance('NTK')">
+    <span style="background:#7f1d1d"></span> NTK
+  </div>
+  <div onclick="openAlliance('TVK')">
+    <span style="background:#f59e0b"></span> TVK
+  </div>
+  <div onclick="openAlliance('OTHERS')">
+    <span style="background:#9ca3af"></span> Others
+  </div>
+</div>
+
+<!-- 🔥 ALLIANCE POPUP -->
+<div id="alliancePopup" class="alliance-popup">
+  <div class="alliance-card" id="allianceContent"></div>
+</div>
+
+    </div>
+    
+  </div>
+
+  <!-- 🔥 POPUP -->
+  <div id="popup" class="modal-backdrop">
+    <div class="modal-card">
+      <button class="popup-close" onclick="closePopup()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+      <div id="popupContent"></div>
+    </div>
+  </div>
+
+</section>
+<div class="chart-section">
+
+  <!-- PARTY CHART -->
+  <div class="chart-card">
+    <h3>Party Leads</h3>
+    <div id="partyChart"></div>
+  </div>
+
+  <!-- ALLIANCE CHART -->
+  <div class="chart-card">
+    <h3>Alliance Leads</h3>
+    <div id="allianceChart"></div>
+  </div>
+
+</div>
+
+<footer class="footer">
+
+  <p class="team-title">
+    Developed by CSE - 2027 Batch
+  </p>
+
+  <div class="team-grid">
+
+  <div class="team-card">
+    <img src="image/sudhakar.jpeg" class="fix-face">
+    <p class="name">Sudhakar V</p>
+    
+  </div>
+
+  <div class="team-card">
+    <img src="image/Jez .jpg.jpeg">
+    <p class="name">Jesvanthsingh S</p>
+    
+  </div>
+
+  <div class="team-card">
+    <img src="image/Thanhgaabarna.jpeg">
+    <p class="name">Thanga Abarna M</p>
+    
+  </div>
+
+  <div class="team-card">
+    <img src="image/jesica.jpeg">
+    <p class="name">jessica J</p>
+    
+  </div>
+
+  <div class="team-card">
+    <img src="image/preveen.jpeg">
+    <p class="name">Praveen K</p>
+  </div>
+
+  <div class="team-card">
+    <img src="image/dhusanth.jpeg">
+    <p class="name">Dhusanth M</p>
+  </div>
+
+</div>
+
+  <p class="copyright">
+    © 2026 All Rights Reserved
+  </p>
+
+</footer>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- 🔥 TOPOJSON (IMPORTANT) -->
+<script src="https://unpkg.com/topojson-client@3"></script>
+
+<!-- 🔥 MAP DATA -->
+<script src="tn-map-topo.js"></script>
+<div id="google_translate_element" style="display:none;"></div>
+
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'en,ta',
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- 🔥 MAP LOGIC -->
+<script src="map.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
