@@ -124,22 +124,26 @@ document.getElementById("translateBtn").onclick = () => {
     return;
   }
 
-  if (currentLang === "en") {
-    // 👉 English → Tamil
-    currentLang = "ta";
-    localStorage.setItem("lang", "ta");
+if (currentLang === "en") {
+  // 👉 English → Tamil (translate pannalam)
+  currentLang = "ta";
+  localStorage.setItem("lang", "ta");
 
+  const combo = document.querySelector(".goog-te-combo");
+  if (combo) {
     combo.value = "ta";
     combo.dispatchEvent(new Event("change"));
-
-  } else {
-    // 👉 Tamil → English
-    currentLang = "en";   // 🔥 IMPORTANT (missing before)
-    localStorage.setItem("lang", "en");
-
-    combo.value = "en";
-    combo.dispatchEvent(new Event("change"));
   }
+
+} else {
+  // 👉 Tamil → ORIGINAL English (reload venum)
+  currentLang = "en";
+  localStorage.setItem("lang", "en");
+
+  // 🔥 IMPORTANT: remove translate & reload original page
+  document.cookie = "googtrans=/auto/en";
+  location.reload();
+}
 
   updateSwitchUI();
 
