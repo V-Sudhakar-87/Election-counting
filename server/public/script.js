@@ -58,39 +58,44 @@ const customFix = {
 window.onload = () => {
   const lang = localStorage.getItem("lang");
 
-  if (!lang) {
-    // 👉 first time open → Tamil
-    document.cookie = "googtrans=/auto/ta";
-    localStorage.setItem("lang", "ta");
-    location.reload();
-  }
+ if (!lang) {
+  lang = "ta";
+  localStorage.setItem("lang", "ta");
+
+  document.cookie = "googtrans=/auto/ta; path=/";
+  location.reload();
+  return;
+}
+
+if (lang === "ta") {
+  document.cookie = "googtrans=/auto/ta; path=/";
+} else {
+  document.cookie =
+    "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
    updateSwitchUI();
 };
 
 let currentLang = localStorage.getItem("lang") || "ta";
 
 document.getElementById("translateBtn").onclick = () => {
-  const combo = document.querySelector(".goog-te-combo");
-
-  if (!combo) {
-    console.log("Translate loading...");
-    return;
-  }
+  
 
   if (currentLang === "en") {
     // 👉 English → Tamil
     currentLang = "ta";
     localStorage.setItem("lang", "ta");
     updateSwitchUI(); 
-    combo.value = "ta";
-    combo.dispatchEvent(new Event("change"));
+    document.cookie = "googtrans=/auto/ta; path=/";
+  location.reload();
 
   } else {
     // 👉 Tamil → ORIGINAL English
     localStorage.setItem("lang", "en");
     updateSwitchUI();
-    document.cookie = "googtrans=/auto/en";
-    location.reload();
+  document.cookie =
+    "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  location.reload();
     return;
   }
 
