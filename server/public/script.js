@@ -141,7 +141,7 @@ if (currentLang === "en") {
   localStorage.setItem("lang", "en");
 
   // 🔥 IMPORTANT: remove translate & reload original page
-  document.cookie = "googtrans=/auto/en";
+  document.cookie = "googtrans=/auto/en; path=/";
   location.reload();
 }
 
@@ -265,15 +265,17 @@ renderPartyChart(partyData);
 renderAllianceChart(allianceData);  
 
 setTimeout(() => {
-  const lang = localStorage.getItem("lang");
+  const lang = localStorage.getItem("lang") || "ta";
+
+  // 🔥 IMPORTANT: cookie set pannidu
+  document.cookie = `googtrans=/auto/${lang}`;
 
   const combo = document.querySelector(".goog-te-combo");
-
-  if (combo && lang) {
+  if (combo) {
     combo.value = lang;
     combo.dispatchEvent(new Event("change"));
   }
-}, 300);
+}, 1000);
   } catch (err) {
     console.log("API ERROR:", err);
   }
