@@ -55,7 +55,7 @@ const customFix = {
 "பிரவீன் கே":"பிரவீன் க",
 "துசாந்த் எம்":"துஷாந்த் மு"
 };
-window.onload = () => {
+/*window.onload = () => {
   const lang = localStorage.getItem("lang");
 
   if (!lang) {
@@ -65,7 +65,7 @@ window.onload = () => {
     location.reload();
   }
    updateSwitchUI();
-};
+};*/
 
 let currentLang = localStorage.getItem("lang") || "ta";
 
@@ -81,19 +81,24 @@ document.getElementById("translateBtn").onclick = () => {
     // 👉 English → Tamil
     currentLang = "ta";
     localStorage.setItem("lang", "ta");
-    updateSwitchUI(); 
+    //updateSwitchUI(); 
     combo.value = "ta";
     combo.dispatchEvent(new Event("change"));
 
   } else {
     // 👉 Tamil → ORIGINAL English
-    localStorage.setItem("lang", "en");
+   /* localStorage.setItem("lang", "en");
     updateSwitchUI();
-    document.cookie = "googtrans=/auto/en";
+   document.cookie = "googtrans=/auto/en";
     location.reload();
-    return;
-  }
+    return;*/
+    currentLang = "en";
+    localStorage.setItem("lang", "en");
 
+    combo.value = "en";
+    combo.dispatchEvent(new Event("change"));
+  }
+  updateSwitchUI();
   hideGoogleBar();
   setTimeout(hideGoogleBar, 50);
   setTimeout(hideGoogleBar, 200);
@@ -210,7 +215,18 @@ renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
 renderAllianceChart(allianceData);  
 
+ // 🔥 LANGUAGE FIX
+    setTimeout(() => {
+      const lang = localStorage.getItem("lang");
 
+      if (lang === "en") {
+        const combo = document.querySelector(".goog-te-combo");
+        if (combo) {
+          combo.value = "en";
+          combo.dispatchEvent(new Event("change"));
+        }
+      }
+    }, 500);
   } catch (err) {
     console.log("API ERROR:", err);
   }
