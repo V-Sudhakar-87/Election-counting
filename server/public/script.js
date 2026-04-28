@@ -58,7 +58,7 @@ const customFix = {
 
 
 window.onload = () => {
-  const lang = localStorage.getItem("lang");
+  let lang = localStorage.getItem("lang");
 
  if (!lang) {
   lang = "ta";
