@@ -56,31 +56,26 @@ const customFix = {
 "துசாந்த் எம்":"துஷாந்த் மு"
 };
 
-let currentLang;
-let currentLang;
 
 window.onload = () => {
-  let lang = localStorage.getItem("lang");
+  const lang = localStorage.getItem("lang");
 
-  if (!lang) {
-    lang = "ta";
-    localStorage.setItem("lang", "ta");
+ if (!lang) {
+  lang = "ta";
+  localStorage.setItem("lang", "ta");
 
-    document.cookie = "googtrans=/auto/ta; path=/";
-    location.reload();
-    return;
-  }
+  document.cookie = "googtrans=/auto/ta; path=/";
+  location.reload();
+  return;
+}
 
-  currentLang = lang; // 🔥 IMPORTANT SYNC
-
-  if (lang === "ta") {
-    document.cookie = "googtrans=/auto/ta; path=/";
-  } else {
-    document.cookie =
-      "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  updateSwitchUI();
+if (lang === "ta") {
+  document.cookie = "googtrans=/auto/ta; path=/";
+} else {
+  document.cookie =
+    "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+   updateSwitchUI();
 };
 
 let currentLang = localStorage.getItem("lang") || "ta";
