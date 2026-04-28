@@ -220,10 +220,10 @@ const fixObserver = new MutationObserver(() => {
   }
 });
 
-/*fixObserver.observe(document.body, {
+fixObserver.observe(document.body, {
   childList: true,
   subtree: true
-});*/
+});
 // 🔥 ONLY REMOVE TOP BAR (NOT ENGINE)
 function hideGoogleBar() {
   const banner = document.querySelector('.goog-te-banner-frame');
