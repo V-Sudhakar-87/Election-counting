@@ -67,17 +67,18 @@ const customFix = {
    updateSwitchUI();
 };*/
 window.onload = () => {
-  if (!localStorage.getItem("lang")) {
+  let lang = localStorage.getItem("lang");
+
+  if (!lang) {
+    lang = "ta";
     localStorage.setItem("lang", "ta");
   }
 
-  setTimeout(() => {
-    const combo = document.querySelector(".goog-te-combo");
-    if (combo) {
-      combo.value = localStorage.getItem("lang");
-      combo.dispatchEvent(new Event("change"));
-    }
-  }, 1000);
+  if (lang === "ta") {
+    document.cookie = "googtrans=/auto/ta; path=/";
+  } else {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
 
   updateSwitchUI();
 };
@@ -116,7 +117,7 @@ document.getElementById("translateBtn").onclick = () => {
 };*/
 let currentLang = localStorage.getItem("lang") || "ta";
 
-document.getElementById("translateBtn").onclick = () => {
+/*document.getElementById("translateBtn").onclick = () => {
   const combo = document.querySelector(".goog-te-combo");
 
   if (!combo) {
@@ -152,6 +153,26 @@ if (currentLang === "en") {
   setTimeout(hideGoogleBar, 50);
   setTimeout(hideGoogleBar, 200);
   setTimeout(hideGoogleBar, 500);
+};*/
+document.getElementById("translateBtn").onclick = () => {
+
+  if (currentLang === "en") {
+    // 👉 English → Tamil
+    currentLang = "ta";
+    localStorage.setItem("lang", "ta");
+
+    document.cookie = "googtrans=/auto/ta; path=/";
+    location.reload();
+
+  } else {
+    // 👉 Tamil → ORIGINAL English
+    currentLang = "en";
+    localStorage.setItem("lang", "en");
+
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    location.reload();
+  }
+
 };
 function fixTamilWords() {
 
@@ -264,7 +285,7 @@ renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
 renderAllianceChart(allianceData);  
 
-setTimeout(() => {
+/*setTimeout(() => {
   const lang = localStorage.getItem("lang") || "ta";
 
   // 🔥 IMPORTANT: cookie set pannidu
@@ -275,7 +296,7 @@ setTimeout(() => {
     combo.value = lang;
     combo.dispatchEvent(new Event("change"));
   }
-}, 1000);
+}, 1000);*/
   } catch (err) {
     console.log("API ERROR:", err);
   }
