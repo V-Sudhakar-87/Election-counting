@@ -106,7 +106,6 @@ document.getElementById("translateBtn").onclick = () => {
   setTimeout(hideGoogleBar, 500);
 };
 function fixTamilWords() {
-  // 🔥 safety check (extra protection)
   if (localStorage.getItem("lang") !== "ta") return;
 
   const walker = document.createTreeWalker(
@@ -127,21 +126,25 @@ function fixTamilWords() {
   }
 }
 
-// 🔥 wrapper function
-function runTamilFix() {
-  if (localStorage.getItem("lang") === "ta") {
-    fixTamilWords();
-  }
+// 🔥 aggressive apply (important)
+function runTamilFixLoop() {
+  if (localStorage.getItem("lang") !== "ta") return;
+
+  fixTamilWords();
+
+  // 🔥 repeat few times to override google translate
+  setTimeout(fixTamilWords, 200);
+  setTimeout(fixTamilWords, 500);
+  setTimeout(fixTamilWords, 1000);
 }
 
-// 🔥 initial runs
-setTimeout(runTamilFix, 500);
-setTimeout(runTamilFix, 1000);
+// 🔥 initial trigger
+setTimeout(runTamilFixLoop, 500);
 
-// 🔥 observer (only Tamil mode)
+// 🔥 observe DOM changes
 const fixObserver = new MutationObserver(() => {
   if (localStorage.getItem("lang") === "ta") {
-    fixTamilWords();
+    runTamilFixLoop();
   }
 });
 
