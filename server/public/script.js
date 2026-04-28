@@ -106,6 +106,8 @@ document.getElementById("translateBtn").onclick = () => {
   setTimeout(hideGoogleBar, 500);
 };
 function fixTamilWords() {
+  // 🔥 safety check (extra protection)
+  if (localStorage.getItem("lang") !== "ta") return;
 
   const walker = document.createTreeWalker(
     document.body,
@@ -116,24 +118,31 @@ function fixTamilWords() {
 
   let node;
 
-  while (node = walker.nextNode()) {
-
+  while ((node = walker.nextNode())) {
     Object.keys(customFix).forEach(key => {
-
       if (node.nodeValue.includes(key)) {
         node.nodeValue = node.nodeValue.replaceAll(key, customFix[key]);
       }
-
     });
-
   }
 }
 
-setTimeout(fixTamilWords, 500);
-setTimeout(fixTamilWords, 1000);
+// 🔥 wrapper function
+function runTamilFix() {
+  if (localStorage.getItem("lang") === "ta") {
+    fixTamilWords();
+  }
+}
 
+// 🔥 initial runs
+setTimeout(runTamilFix, 500);
+setTimeout(runTamilFix, 1000);
+
+// 🔥 observer (only Tamil mode)
 const fixObserver = new MutationObserver(() => {
-  fixTamilWords();
+  if (localStorage.getItem("lang") === "ta") {
+    fixTamilWords();
+  }
 });
 
 fixObserver.observe(document.body, {
