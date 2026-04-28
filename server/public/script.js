@@ -126,25 +126,36 @@ function fixTamilWords() {
   }
 }
 
-// 🔥 aggressive apply (important)
-function runTamilFixLoop() {
+// 🔥 STRONG LOOP (key fix)
+let tamilFixInterval;
+
+function startTamilFix() {
   if (localStorage.getItem("lang") !== "ta") return;
 
-  fixTamilWords();
+  // clear old interval
+  if (tamilFixInterval) clearInterval(tamilFixInterval);
 
-  // 🔥 repeat few times to override google translate
-  setTimeout(fixTamilWords, 200);
-  setTimeout(fixTamilWords, 500);
-  setTimeout(fixTamilWords, 1000);
+  tamilFixInterval = setInterval(() => {
+    fixTamilWords();
+  }, 300); // 🔥 repeat continuously
 }
 
-// 🔥 initial trigger
-setTimeout(runTamilFixLoop, 500);
+// 🔥 stop when English
+function stopTamilFix() {
+  if (tamilFixInterval) clearInterval(tamilFixInterval);
+}
 
-// 🔥 observe DOM changes
+// 🔥 INIT
+setTimeout(() => {
+  if (localStorage.getItem("lang") === "ta") {
+    startTamilFix();
+  }
+}, 1000);
+
+// 🔥 observer
 const fixObserver = new MutationObserver(() => {
   if (localStorage.getItem("lang") === "ta") {
-    runTamilFixLoop();
+    fixTamilWords();
   }
 });
 
