@@ -203,17 +203,27 @@ function fixTamilWords() {
   }
 }
 
-setTimeout(fixTamilWords, 500);
-setTimeout(fixTamilWords, 1000);
+function runTamilFix() {
+  if (localStorage.getItem("lang") === "ta") {
+    fixTamilWords();
+  }
+}
 
+// 🔥 run only in Tamil mode
+setTimeout(runTamilFix, 500);
+setTimeout(runTamilFix, 1000);
+
+// 🔥 observe only Tamil mode
 const fixObserver = new MutationObserver(() => {
-  fixTamilWords();
+  if (localStorage.getItem("lang") === "ta") {
+    fixTamilWords();
+  }
 });
 
-fixObserver.observe(document.body, {
+/*fixObserver.observe(document.body, {
   childList: true,
   subtree: true
-});
+});*/
 // 🔥 ONLY REMOVE TOP BAR (NOT ENGINE)
 function hideGoogleBar() {
   const banner = document.querySelector('.goog-te-banner-frame');
