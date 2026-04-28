@@ -55,25 +55,32 @@ const customFix = {
 "பிரவீன் கே":"பிரவீன் க",
 "துசாந்த் எம்":"துஷாந்த் மு"
 };
+
+let currentLang;
+let currentLang;
+
 window.onload = () => {
-  const lang = localStorage.getItem("lang");
+  let lang = localStorage.getItem("lang");
 
- if (!lang) {
-  lang = "ta";
-  localStorage.setItem("lang", "ta");
+  if (!lang) {
+    lang = "ta";
+    localStorage.setItem("lang", "ta");
 
-  document.cookie = "googtrans=/auto/ta; path=/";
-  location.reload();
-  return;
-}
+    document.cookie = "googtrans=/auto/ta; path=/";
+    location.reload();
+    return;
+  }
 
-if (lang === "ta") {
-  document.cookie = "googtrans=/auto/ta; path=/";
-} else {
-  document.cookie =
-    "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-}
-   updateSwitchUI();
+  currentLang = lang; // 🔥 IMPORTANT SYNC
+
+  if (lang === "ta") {
+    document.cookie = "googtrans=/auto/ta; path=/";
+  } else {
+    document.cookie =
+      "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+
+  updateSwitchUI();
 };
 
 let currentLang = localStorage.getItem("lang") || "ta";
@@ -101,9 +108,11 @@ document.getElementById("translateBtn").onclick = () => {
   updateSwitchUI();
 
   hideGoogleBar();
-  setTimeout(hideGoogleBar, 50);
-  setTimeout(hideGoogleBar, 200);
-  setTimeout(hideGoogleBar, 500);
+ setInterval(() => {
+  if (localStorage.getItem("lang") === "ta") {
+    hideGoogleBar();
+  }
+}, 1000);
 };
 function fixTamilWords() {
   if (localStorage.getItem("lang") !== "ta") return;
