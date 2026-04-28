@@ -70,9 +70,14 @@ window.onload = () => {
   let lang = localStorage.getItem("lang");
 
   if (!lang) {
-    lang = "ta";
-    localStorage.setItem("lang", "ta");
-  }
+  lang = "ta";
+  localStorage.setItem("lang", "ta");
+
+  // 🔥 IMPORTANT
+  document.cookie = "googtrans=/auto/ta; path=/";
+  location.reload();
+  return;
+}
 
   if (lang === "ta") {
     document.cookie = "googtrans=/auto/ta; path=/";
