@@ -81,23 +81,24 @@ let currentLang = localStorage.getItem("lang") || "ta";
 document.getElementById("translateBtn").onclick = () => {
   
 
-  if (currentLang === "en") {
+ if (currentLang === "en") {
     // 👉 English → Tamil
     currentLang = "ta";
     localStorage.setItem("lang", "ta");
-    updateSwitchUI(); 
+
     document.cookie = "googtrans=/auto/ta; path=/";
-  location.reload();
+    location.reload();
 
   } else {
     // 👉 Tamil → ORIGINAL English
+    currentLang = "en";
     localStorage.setItem("lang", "en");
-    updateSwitchUI();
-  document.cookie =
-    "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  location.reload();
-    return;
+
+    document.cookie =
+      "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    location.reload();
   }
+  updateSwitchUI();
 
   hideGoogleBar();
   setTimeout(hideGoogleBar, 50);
