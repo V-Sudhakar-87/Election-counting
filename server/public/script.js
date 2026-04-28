@@ -141,7 +141,7 @@ if (currentLang === "en") {
   localStorage.setItem("lang", "en");
 
   // 🔥 IMPORTANT: remove translate & reload original page
-  document.cookie = "googtrans=/auto/en; path=/";
+   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   location.reload();
 }
 
