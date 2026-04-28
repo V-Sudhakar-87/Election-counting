@@ -67,20 +67,17 @@ const customFix = {
    updateSwitchUI();
 };*/
 window.onload = () => {
-  let lang = localStorage.getItem("lang");
-
-  // 🔥 first time → Tamil default
-  if (!lang) {
-    lang = "ta";
+  if (!localStorage.getItem("lang")) {
     localStorage.setItem("lang", "ta");
   }
 
-  if (lang === "ta") {
-    document.cookie = "googtrans=/auto/ta; path=/";
-  } else {
-    // 🔥 ensure no translate
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
+  setTimeout(() => {
+    const combo = document.querySelector(".goog-te-combo");
+    if (combo) {
+      combo.value = localStorage.getItem("lang");
+      combo.dispatchEvent(new Event("change"));
+    }
+  }, 1000);
 
   updateSwitchUI();
 };
@@ -119,8 +116,6 @@ document.getElementById("translateBtn").onclick = () => {
 };*/
 let currentLang = localStorage.getItem("lang") || "ta";
 
-let currentLang = localStorage.getItem("lang") || "ta";
-
 document.getElementById("translateBtn").onclick = () => {
   const combo = document.querySelector(".goog-te-combo");
 
@@ -129,25 +124,28 @@ document.getElementById("translateBtn").onclick = () => {
     return;
   }
 
-  if (currentLang === "en") {
-    // 👉 English → Tamil
-    currentLang = "ta";
-    localStorage.setItem("lang", "ta");
+if (currentLang === "en") {
+  // 👉 English → Tamil (translate pannalam)
+  currentLang = "ta";
+  localStorage.setItem("lang", "ta");
 
-    document.cookie = "googtrans=/auto/ta; path=/";
-    location.reload();
-
-  } else {
-    // 👉 Tamil → ORIGINAL English
-    currentLang = "en";
-    localStorage.setItem("lang", "en");
-
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    location.reload();
+  const combo = document.querySelector(".goog-te-combo");
+  if (combo) {
+    combo.value = "ta";
+    combo.dispatchEvent(new Event("change"));
   }
 
-  updateSwitchUI();
+} else {
+  // 👉 Tamil → ORIGINAL English (reload venum)
+  currentLang = "en";
+  localStorage.setItem("lang", "en");
 
+  // 🔥 IMPORTANT: remove translate & reload original page
+  
+  location.reload();
+}
+
+  updateSwitchUI();
 
   // 🔥 hide bar (keep as it is)
   hideGoogleBar();
