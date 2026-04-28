@@ -55,7 +55,7 @@ const customFix = {
 "பிரவீன் கே":"பிரவீன் க",
 "துசாந்த் எம்":"துஷாந்த் மு"
 };
-/*window.onload = () => {
+window.onload = () => {
   const lang = localStorage.getItem("lang");
 
   if (!lang) {
@@ -65,30 +65,9 @@ const customFix = {
     location.reload();
   }
    updateSwitchUI();
-};*/
-window.onload = () => {
-  let lang = localStorage.getItem("lang");
-
-  if (!lang) {
-  lang = "ta";
-  localStorage.setItem("lang", "ta");
-
-  // 🔥 IMPORTANT
-  document.cookie = "googtrans=/auto/ta; path=/";
-  location.reload();
-  return;
-}
-
-  if (lang === "ta") {
-    document.cookie = "googtrans=/auto/ta; path=/";
-  } else {
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  updateSwitchUI();
 };
 
-/*let currentLang = localStorage.getItem("lang") || "ta";
+let currentLang = localStorage.getItem("lang") || "ta";
 
 document.getElementById("translateBtn").onclick = () => {
   const combo = document.querySelector(".goog-te-combo");
@@ -119,65 +98,6 @@ document.getElementById("translateBtn").onclick = () => {
   setTimeout(hideGoogleBar, 50);
   setTimeout(hideGoogleBar, 200);
   setTimeout(hideGoogleBar, 500);
-};*/
-let currentLang = localStorage.getItem("lang") || "ta";
-
-/*document.getElementById("translateBtn").onclick = () => {
-  const combo = document.querySelector(".goog-te-combo");
-
-  if (!combo) {
-    console.log("Translate loading...");
-    return;
-  }
-
-if (currentLang === "en") {
-  // 👉 English → Tamil (translate pannalam)
-  currentLang = "ta";
-  localStorage.setItem("lang", "ta");
-
-  const combo = document.querySelector(".goog-te-combo");
-  if (combo) {
-    combo.value = "ta";
-    combo.dispatchEvent(new Event("change"));
-  }
-
-} else {
-  // 👉 Tamil → ORIGINAL English (reload venum)
-  currentLang = "en";
-  localStorage.setItem("lang", "en");
-
-  // 🔥 IMPORTANT: remove translate & reload original page
-  
-  location.reload();
-}
-
-  updateSwitchUI();
-
-  // 🔥 hide bar (keep as it is)
-  hideGoogleBar();
-  setTimeout(hideGoogleBar, 50);
-  setTimeout(hideGoogleBar, 200);
-  setTimeout(hideGoogleBar, 500);
-};*/
-document.getElementById("translateBtn").onclick = () => {
-
-  if (currentLang === "en") {
-    // 👉 English → Tamil
-    currentLang = "ta";
-    localStorage.setItem("lang", "ta");
-
-    document.cookie = "googtrans=/auto/ta; path=/";
-    location.reload();
-
-  } else {
-    // 👉 Tamil → ORIGINAL English
-    currentLang = "en";
-    localStorage.setItem("lang", "en");
-
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    location.reload();
-  }
-
 };
 function fixTamilWords() {
 
@@ -203,21 +123,11 @@ function fixTamilWords() {
   }
 }
 
-function runTamilFix() {
-  if (localStorage.getItem("lang") === "ta") {
-    fixTamilWords();
-  }
-}
+setTimeout(fixTamilWords, 500);
+setTimeout(fixTamilWords, 1000);
 
-// 🔥 run only in Tamil mode
-setTimeout(runTamilFix, 500);
-setTimeout(runTamilFix, 1000);
-
-// 🔥 observe only Tamil mode
 const fixObserver = new MutationObserver(() => {
-  if (localStorage.getItem("lang") === "ta") {
-    fixTamilWords();
-  }
+  fixTamilWords();
 });
 
 fixObserver.observe(document.body, {
@@ -300,18 +210,7 @@ renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
 renderAllianceChart(allianceData);  
 
-/*setTimeout(() => {
-  const lang = localStorage.getItem("lang") || "ta";
 
-  // 🔥 IMPORTANT: cookie set pannidu
-  document.cookie = `googtrans=/auto/${lang}`;
-
-  const combo = document.querySelector(".goog-te-combo");
-  if (combo) {
-    combo.value = lang;
-    combo.dispatchEvent(new Event("change"));
-  }
-}, 1000);*/
   } catch (err) {
     console.log("API ERROR:", err);
   }
