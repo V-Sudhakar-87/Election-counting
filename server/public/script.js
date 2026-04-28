@@ -66,7 +66,54 @@ const customFix = {
   }
    updateSwitchUI();
 };*/
+window.onload = () => {
+  if (!localStorage.getItem("lang")) {
+    localStorage.setItem("lang", "ta");
+  }
 
+  setTimeout(() => {
+    const combo = document.querySelector(".goog-te-combo");
+    if (combo) {
+      combo.value = localStorage.getItem("lang");
+      combo.dispatchEvent(new Event("change"));
+    }
+  }, 1000);
+
+  updateSwitchUI();
+};
+
+/*let currentLang = localStorage.getItem("lang") || "ta";
+
+document.getElementById("translateBtn").onclick = () => {
+  const combo = document.querySelector(".goog-te-combo");
+
+  if (!combo) {
+    console.log("Translate loading...");
+    return;
+  }
+
+  if (currentLang === "en") {
+    // 👉 English → Tamil
+    currentLang = "ta";
+    localStorage.setItem("lang", "ta");
+    updateSwitchUI(); 
+    combo.value = "ta";
+    combo.dispatchEvent(new Event("change"));
+
+  } else {
+    // 👉 Tamil → ORIGINAL English
+    localStorage.setItem("lang", "en");
+    updateSwitchUI();
+    document.cookie = "googtrans=/auto/en";
+    location.reload();
+    return;
+  }
+
+  hideGoogleBar();
+  setTimeout(hideGoogleBar, 50);
+  setTimeout(hideGoogleBar, 200);
+  setTimeout(hideGoogleBar, 500);
+};*/
 let currentLang = localStorage.getItem("lang") || "ta";
 
 document.getElementById("translateBtn").onclick = () => {
@@ -81,24 +128,22 @@ document.getElementById("translateBtn").onclick = () => {
     // 👉 English → Tamil
     currentLang = "ta";
     localStorage.setItem("lang", "ta");
-    //updateSwitchUI(); 
+
     combo.value = "ta";
     combo.dispatchEvent(new Event("change"));
 
   } else {
-    // 👉 Tamil → ORIGINAL English
-   /* localStorage.setItem("lang", "en");
-    updateSwitchUI();
-   document.cookie = "googtrans=/auto/en";
-    location.reload();
-    return;*/
-    currentLang = "en";
+    // 👉 Tamil → English
+    currentLang = "en";   // 🔥 IMPORTANT (missing before)
     localStorage.setItem("lang", "en");
 
     combo.value = "en";
     combo.dispatchEvent(new Event("change"));
   }
+
   updateSwitchUI();
+
+  // 🔥 hide bar (keep as it is)
   hideGoogleBar();
   setTimeout(hideGoogleBar, 50);
   setTimeout(hideGoogleBar, 200);
@@ -215,18 +260,16 @@ renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
 renderAllianceChart(allianceData);  
 
- // 🔥 LANGUAGE FIX
-    setTimeout(() => {
-      const lang = localStorage.getItem("lang");
+setTimeout(() => {
+  const lang = localStorage.getItem("lang");
 
-      if (lang === "en") {
-        const combo = document.querySelector(".goog-te-combo");
-        if (combo) {
-          combo.value = "en";
-          combo.dispatchEvent(new Event("change"));
-        }
-      }
-    }, 500);
+  const combo = document.querySelector(".goog-te-combo");
+
+  if (combo && lang) {
+    combo.value = lang;
+    combo.dispatchEvent(new Event("change"));
+  }
+}, 300);
   } catch (err) {
     console.log("API ERROR:", err);
   }
