@@ -108,11 +108,9 @@ document.getElementById("translateBtn").onclick = () => {
   updateSwitchUI();
 
   hideGoogleBar();
- setInterval(() => {
-  if (localStorage.getItem("lang") === "ta") {
-    hideGoogleBar();
-  }
-}, 1000);
+  setTimeout(hideGoogleBar, 50);
+  setTimeout(hideGoogleBar, 200);
+  setTimeout(hideGoogleBar, 500);
 };
 function fixTamilWords() {
   if (localStorage.getItem("lang") !== "ta") return;
