@@ -76,7 +76,36 @@ const customFix = {
 "போலர்":"போலூர்",
 "கீழ் பெரம்பத்தூர்":"கில்பென்னத்தூர்",
 "கட்டுமன்னார்கோயில்(SC)":"காட்டுமன்னார்கோயில் (SC)",
-"வேதரண்யம்":"வேதாரண்யம்"
+"வேதரண்யம்":"வேதாரண்யம்",
+"எம்":"M",
+"ஆர்":"R",
+"ஜே":"J",
+"ஏ":"A",
+"டி":"T",
+"ஜி":"G",
+"பி":"P",
+"எஸ்":"S",
+"யு":"U",
+"என்":"N",
+"சி":"C",
+"கே":"K",
+"டபிள்யூ":"W",
+"ரூபி":"Ruby",
+"தலை சுந்தரம்":"தலவாய் சுந்தரம்",
+"மானவை கண்ணன்":"மனவை கண்ணன்",
+"எசக்கிமுத்து":"இசக்கிமுத்து",
+"வி":"V",
+"தனித்தானம்":"தனிதங்கம்",
+"சுதரோலி":"சுடரொளி",
+"இசாகி":"இசக்கி‌",
+"செல்வா":"செல்வ",
+"பூசா":"பூச",
+"தங்கபாலம்":"தங்கபழம்",
+"மரியப்பன்":"மாரியப்பன்",
+"தச்சாய்":"தச்சை",
+"பிண்டியன்":"பாண்டியன்",
+"எசக்கி":"இசக்கி"
+
 };
 
 
@@ -256,7 +285,7 @@ const allianceMembers = {
   NTK: ["NTK"],
   TVK: ["TVK"]
 };
-
+let RESULT_MODE = true; // 🔥 change to true when result declared
 async function loadData() {
   try {
     const res = await fetch(API);
@@ -270,6 +299,21 @@ async function loadData() {
 renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
 renderAllianceChart(allianceData);  
+ if (RESULT_MODE) {
+
+      const topAlliance = Object.keys(allianceData)
+        .sort((a, b) => allianceData[b] - allianceData[a])[0];
+
+      const leader = getLeaderFromAlliance(topAlliance);
+
+      if (leader && !sessionStorage.getItem("winnerShown")) {
+        showWinnerPopup(leader, topAlliance);
+        setTimeout(() => {
+  startConfetti();
+}, 200);  
+        sessionStorage.setItem("winnerShown", "true");
+      }
+    }
 
 
   } catch (err) {
@@ -294,6 +338,102 @@ function updateCandidateCount(list) {
 }
 
 loadData();
+
+function getLeaderFromAlliance(alliance) {
+
+  const map = {
+    SPA: {
+       name: "M.K.Stalin",
+      party: "DMK",
+      alliance: "SPA",
+      image: "image/mk-stalin.jpg"
+    },
+    NDA: {
+       name: "Edappadi Palanisamy",
+      party: "AIADMK",
+      alliance: "NDA",
+      image: "image/Edapadi.jpg"
+    },
+    NTK: {
+      name: "Seeman",
+      party: "NTK",
+      alliance: "NTK",
+      image: "image/seeman.jpg"
+    },
+    TVK: {
+      name: "Vijay",
+      party: "TVK",
+      alliance: "TVK",
+      image: "image/vijay.jpg"
+    }
+  };
+
+  return map[alliance];
+}
+function showWinnerPopup(leader) {
+
+  const popup = document.createElement("div");
+  popup.className = "winner-popup";
+
+  popup.innerHTML = `
+    <div class="winner-card">
+
+      <h1 class="winner-title">🎉 Congratulations</h1>
+
+      <img src="${leader.image}" class="winner-img">
+
+      <h2 class="winner-name">${leader.name}</h2>
+
+      <p class="winner-party">${leader.party}</p>
+
+      <p class="winner-alliance">${leader.alliance} Alliance Wins</p>
+
+      <button onclick="closeWinnerPopup()">Go to Website</button>
+
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+   const partyColors = {
+    DMK: "#e11d48",
+    AIADMK: "#16a34a",
+    NTK: "#7f1d1d",
+    TVK: "#f59e0b"
+  };
+
+  popup.querySelector(".winner-party").style.color =
+    partyColors[leader.party] || "#000";
+}
+
+function closeWinnerPopup() {
+  document.querySelector(".winner-popup").remove();
+}
+function startConfetti() {
+  const container = document.createElement("div");
+  container.className = "confetti-container";
+
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 60; i++) {
+    const conf = document.createElement("div");
+    conf.className = "confetti";
+
+    conf.style.left = Math.random() * 100 + "vw";
+    conf.style.animationDuration = (2 + Math.random() * 3) + "s";
+    conf.style.animationDelay = Math.random() * 2 + "s";
+
+      // 🔥 ADD THIS LINE HERE
+  conf.style.background = ["orange","red","yellow","white"]
+    [Math.floor(Math.random()*4)];
+
+    container.appendChild(conf);
+  }
+
+  setTimeout(() => {
+    container.remove();
+  }, 5000);
+}
 
 /*setInterval(loadData, 5000);*/
 const allianceCM = {
