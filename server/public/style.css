@@ -330,7 +330,7 @@ body.light .ticker-text {
 @media (max-width: 600px) {
 
   #liveTimer {
-    font-size: 11px;   /* 🔥 reduce size */
+    font-size: 9px;   /* 🔥 reduce size */
     padding: 4px 10px; /* 🔥 compact */
     letter-spacing: 0.5px;
   }
