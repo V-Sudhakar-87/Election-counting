@@ -58,12 +58,18 @@ g.selectAll("path")
     handleClick(d);
   });
 
- const zoom = d3.zoom()
+/* const zoom = d3.zoom()
   .scaleExtent([1, 6])
   .on("zoom", (event) => {
     g.attr("transform", event.transform); // 🔥 apply to group
+  });*/
+const zoom = d3.zoom()
+  .scaleExtent([1, 6])   // zoom limit
+  .translateExtent([[0, 0], [width, height]]) // 🔥 STOP moving outside
+  .extent([[0, 0], [width, height]])          // 🔥 viewport fix
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
   });
-
 // ❌ disable scroll zoom
 svg.call(zoom).on("wheel.zoom", null);
 
@@ -79,9 +85,15 @@ function zoomOut() {
   );
 }
 
-svg.call(
+/*svg.call(
   zoom.transform,
   d3.zoomIdentity.translate(0, 0).scale(1)
+);*/
+svg.call(zoom).call(
+  zoom.transform,
+  d3.zoomIdentity
+    .translate(0, 0)
+    .scale(1)
 );
 
 // ==========================
