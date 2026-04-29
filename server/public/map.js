@@ -614,7 +614,7 @@ if (hasVotes && runner && runner.votes > 0) {
 </div>
 
           <div class="candidate-info">
-            <span class="name">${c.name}</span>
+            <span class="name notranslate" translate="no>${c.name}</span>
             <span class="party">${c.party}</span>
           </div>
 
