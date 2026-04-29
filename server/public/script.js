@@ -103,7 +103,7 @@ if (lang === "ta") {
    updateSwitchUI();
    checkLiveStatus();
 };
-function checkLiveStatus() {
+/*function checkLiveStatus() {
   const today = new Date();
 
   const day = today.getDate();
@@ -116,6 +116,49 @@ function checkLiveStatus() {
   } else {
     liveEl.style.display = "none";
   }
+}*/
+function checkLiveStatus() {
+
+  const liveEl = document.getElementById("liveIndicator");
+  const timerEl = document.getElementById("liveTimer");
+
+ const target = new Date(2026, 4, 4, 8, 0, 0);
+
+  function update() {
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0) {
+      liveEl.style.display = "inline-flex";
+      timerEl.style.display = "none";
+      return;
+    }
+
+    // 🔥 CORRECT SPLIT
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    const hours = Math.floor(
+      (diff / (1000 * 60 * 60)) % 24
+    );
+
+    const mins = Math.floor(
+      (diff / (1000 * 60)) % 60
+    );
+
+    const secs = Math.floor(
+      (diff / 1000) % 60
+    );
+
+   timerEl.innerText =
+  `${days.toString().padStart(2,"0")}D : ` +
+  `${hours.toString().padStart(2,"0")}H : ` +
+  `${mins.toString().padStart(2,"0")}M : ` +
+  `${secs.toString().padStart(2,"0")}S`;
+
+  }
+
+  update();
+  setInterval(update, 1000);
 }
 
 let currentLang = localStorage.getItem("lang") || "ta";
@@ -493,7 +536,7 @@ leaders.sort((a, b) => {
         <h3>${l.name}</h3>
          <div class="party-row">
       <img src="${config.symbol}" class="party-symbol">
-      <p style="color:${config.color}; font-weight:800; font-size:17px;">
+      <p style="color:${config.color}; font-weight:800; font-size:14px;">
         ${l.party}
       </p>
     </div>
