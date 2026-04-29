@@ -596,6 +596,22 @@ body.light .status {
   }
 
 }
+.tn-logo {
+  width: 40px !important;
+  height: 40px !important;
+
+  object-fit: cover;
+  border-radius: 50%;
+
+  flex-shrink: 0;   /* 🔥 prevent stretch */
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  height: 60px;   /* 🔥 FIX HEADER HEIGHT */
+}
 
 /* 🔥 PARTY ROW ALIGN */
 .party-row {
