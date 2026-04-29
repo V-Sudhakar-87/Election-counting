@@ -573,7 +573,7 @@ if (hasVotes && runner && runner.votes > 0) {
     <img src="${getPartySymbol(leader.party)}" class="leader-symbol">
 
     <div class="leader-info">
-      <h3>${leader.name}</h3>
+      <h3 class="notranslate" translate="no">${leader.name}</h3>
 
       <p class="party-name">${leader.party}</p>
       <span class="alliance">${leader.alliance_name}</span>
