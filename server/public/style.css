@@ -585,14 +585,16 @@ body.light .status {
   .cm-grid {
     display: grid !important;              /* 🔥 flex → grid */
     grid-template-columns: repeat(2, 1fr); /* 🔥 2 per row */
-    gap: 15px;
-
+     gap: 10px;              /* 🔥 reduce gap */
+    padding: 0 10px;        /* 🔥 side space */
     overflow-x: hidden !important;         /* ❌ no scroll */
   }
 
   .cm-card {
     width: 100% !important;   /* 🔥 full width inside grid */
     min-width: unset;         /* ❌ remove scroll behavior */
+    padding: 12px;          /* 🔥 reduce card padding */
+    border-radius: 12px;
   }
 
 }
