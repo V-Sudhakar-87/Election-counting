@@ -1007,28 +1007,36 @@ body:not(.light) .alliance-card {
 @media (max-width: 768px) {
 
   .map-legend {
-   position: static;
+    position: absolute;
+    left: 12px;
+    top: 35%;                 /* 🔥 konjam top ku move */
+    transform: translateY(-50%);
 
     display: flex;
-    flex-direction: row;
-
-    justify-content: center;
-    align-items: center;
-
+    flex-direction: column;
     gap: 12px;
-
-    flex-wrap: nowrap;   /* 🔥 VERY IMPORTANT */
-    overflow-x: auto;    /* 🔥 if space illa scroll */
-
-    margin-top: 15px;
   }
+
+  /* 🔥 HIDE TEXT */
   .map-legend div {
-    font-size: 12px;
-    padding: 5px 8px;
-    white-space: nowrap; /* 🔥 prevent break */
+    font-size: 0;   /* 💣 main fix */
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .map-area {
-    display: block;   /* 🔥 VERY IMPORTANT */
+
+  /* 🔥 KEEP DOT */
+  .map-legend div span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: block;
   }
 
 }
