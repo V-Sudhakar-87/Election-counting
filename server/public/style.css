@@ -399,13 +399,22 @@ body.light #translateBtn {
 @media (max-width: 600px) {
 
   .stats {
-    overflow-x: auto;   /* 👉 scroll வரும் */
-    justify-content: flex-start;
-    
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 10px;
+  }
+
+  /* 🔥 leading card full width */
+  .leading-card {
+    grid-column: span 2;
   }
 
   .card {
-    min-width: 200px;  /* 👉 shrink ஆகாது */
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    padding: 15px;
   }
 
 }
@@ -521,7 +530,21 @@ body.light .status {
   padding: 20px 20px;
   text-align: left;   /* 🔥 center → left */
 }
+.cm-loading {
+  text-align: center;
+  padding: 30px;
+  font-size: 20px;
+  font-weight: 600;
 
+  color: orange;
+
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
 .cm-section h2 {
    width: 100%;
   max-width: 1200px;   /* 🔥 control layout */
@@ -544,6 +567,36 @@ body.light .status {
   justify-content: space-between; /* 🔥 equal spacing */
 
   text-align: center;
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1e293b 25%,
+    #334155 50%,
+    #1e293b 75%
+  );
+
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+
+  height: 260px;
+  border-radius: 16px;
+}
+
+/* light theme */
+body.light .skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+}
+
+/* animation */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 .cm-card h3 {
   margin-top: 10px;
@@ -737,20 +790,36 @@ body.light .map-area {
   color: #666;
 }
 .map-search-box {
-  margin: 20px 0;
+  position: relative;
+  width: 600px;
+  margin: auto;
 }
 
 #mapSearch {
-  width: 60%;
+  width: 100%;
   max-width: 400px;
-  padding: 12px 18px;
+  padding: 12px 40px 12px 15px;
   border-radius: 30px;
   border: 1px solid #ddd;
   outline: none;
   font-size: 14px;
   transition: 0.2s;
 }
+/* 🔥 FINAL FIX - SEARCH BOX */
+#mapSearch {
+  width: 100% !important;
+  max-width: none !important;   /* 🔥 VERY IMPORTANT */
+  padding: 12px 45px 12px 15px;
+  box-sizing: border-box;
+}
 
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
 #mapSearch:focus {
   border-color: #2563eb;
   box-shadow: 0 0 8px rgba(37, 99, 235, 0.2);
@@ -800,6 +869,9 @@ body:not(.light) #mapSearch {
 @media (max-width: 768px) {
   #tnMap {
     height: 380px;   /* 🔥 increase */
+  }
+  .map-search-box {
+    width: 90%;
   }
 }
 
@@ -1174,7 +1246,9 @@ body.light .map-tooltip {
   width: 600px;
   margin: auto;
 }
-
+#tnMap {
+  touch-action: pan-y pinch-zoom;
+}
 .map-search-box input {
   width: 100%;
   padding: 12px 40px 12px 15px; /* 🔥 right space for icon */

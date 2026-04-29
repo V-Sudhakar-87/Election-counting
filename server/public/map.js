@@ -59,16 +59,39 @@ g.selectAll("path")
   .scaleExtent([1, 6])
   .on("zoom", (event) => {
     g.attr("transform", event.transform); // 🔥 apply to group
-  });*/
+  });
 const zoom = d3.zoom()
   .scaleExtent([1, 6])   // zoom limit
   .translateExtent([[0, 0], [width, height]]) // 🔥 STOP moving outside
   .extent([[0, 0], [width, height]])          // 🔥 viewport fix
   .on("zoom", (event) => {
     g.attr("transform", event.transform);
+  });*/
+  const zoom = d3.zoom()
+  .scaleExtent([1, 6])
+  .translateExtent([
+    [-width, -height], 
+    [width * 2, height * 2]
+  ])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
   });
 // ❌ disable scroll zoom
-svg.call(zoom).on("wheel.zoom", null);
+//svg.call(zoom).on("wheel.zoom", null);
+svg.call(zoom);
+
+// 🔥 CONTROL WHEEL BEHAVIOR
+svg.node().addEventListener("wheel", function(e) {
+
+  // 👉 PC: only allow zoom when CTRL pressed
+  if (e.ctrlKey) {
+    return; // allow zoom
+  }
+
+  // 👉 otherwise block zoom, allow page scroll
+  e.stopImmediatePropagation();
+
+}, { passive: false });
 
 function zoomIn() {
   svg.transition().call(

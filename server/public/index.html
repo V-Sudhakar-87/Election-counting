@@ -30,7 +30,9 @@
     <img src="/image/logo.jpeg" class="tn-logo" alt="TN Logo">
     <div class="title">
       <h1 id="titleText">Election 2026</h1>
-      <span class="live-dot"></span><small id="subText">Live</small>
+      <span id="liveIndicator" style="display:none;">
+  <span class="live-dot"></span> LIVE
+</span>
     </div>
   </div>
 
@@ -95,7 +97,7 @@
 
     
 
-    <div class="card">
+    <div class="card leading-card">
       <h2  id="leadingParty">waiting</h2>
       <small>LEADING PARTY</small>
     </div>
@@ -108,8 +110,16 @@
 
   <h2>Chief Minister Candidates</h2>
 
+  <div id="cmLoading" class="cm-loading">
+  Loading candidates...
+</div>
+
   <div class="cm-grid" id="cmGrid">
     <!-- JS la cards generate aagum -->
+  <div class="cm-card skeleton"></div>
+  <div class="cm-card skeleton"></div>
+  <div class="cm-card skeleton"></div>
+  <div class="cm-card skeleton"></div>
   </div>
 
 </section>
@@ -132,6 +142,7 @@
         id="mapSearch" 
         placeholder="Search constituency..."
       >
+      <i class="fa fa-search search-icon"></i>
       <div id="searchResults" class="search-results"></div>
     </div>
 

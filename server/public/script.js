@@ -101,7 +101,22 @@ if (lang === "ta") {
     "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
    updateSwitchUI();
+   checkLiveStatus();
 };
+function checkLiveStatus() {
+  const today = new Date();
+
+  const day = today.getDate();
+  const month = today.getMonth() + 1; // Jan = 0
+
+  const liveEl = document.getElementById("liveIndicator");
+
+  if (month === 5 && day === 4 && today.getHours() >= 8) {
+    liveEl.style.display = "inline-flex";
+  } else {
+    liveEl.style.display = "none";
+  }
+}
 
 let currentLang = localStorage.getItem("lang") || "ta";
 
@@ -230,15 +245,23 @@ const allianceMembers = {
   NTK: ["NTK"],
   TVK: ["TVK"]
 };
-let RESULT_MODE = true; // 🔥 change to true when result declared
+let RESULT_MODE = false;// 🔥 change to true when result declared
+let firstLoadDone = false; 
 async function loadData() {
   try {
+    if (!firstLoadDone) {
+      document.getElementById("cmLoading").style.display = "block";
+    }
     const res = await fetch(API);
     const data = await res.json();
     const list = data.constituencies || data;
 
     updateCandidateCount(data.constituencies);
     renderCM(list ,data.partyLeadCount);
+    if (!firstLoadDone) {
+      document.getElementById("cmLoading").style.display = "none";
+      firstLoadDone = true;
+    }
     updateLeadingParty(data);
     const partyData = buildPartyCountFromData(data.constituencies);
 renderPartyChart(partyData);
@@ -294,19 +317,19 @@ function getLeaderFromAlliance(alliance) {
       image: "image/mk-stalin.jpg"
     },
     NDA: {
-       name: "Edappadi Palanisamy",
+       name: "Edappadi K. Palaniswami",
       party: "AIADMK",
       alliance: "NDA",
       image: "image/Edapadi.jpg"
     },
     NTK: {
-      name: "Seeman",
+      name: "Senthamizhan Seeman",
       party: "NTK",
       alliance: "NTK",
       image: "image/seeman.jpg"
     },
     TVK: {
-      name: "Vijay",
+      name: "Joseph Vijay Chandrasekhar",
       party: "TVK",
       alliance: "TVK",
       image: "image/vijay.jpg"
@@ -339,6 +362,11 @@ function showWinnerPopup(leader) {
   `;
 
   document.body.appendChild(popup);
+  setTimeout(() => {
+  if (localStorage.getItem("lang") === "ta") {
+    fixTamilWords();
+  }
+}, 200);
 
    const partyColors = {
     DMK: "#e11d48",
@@ -392,6 +420,7 @@ const allianceCM = {
 function renderCM(data, partyLeadCount) {
 
   const grid = document.getElementById("cmGrid");
+  grid.innerHTML = ""; 
   const partyConfig = {
   "DMK": {
     color: "#e11d48",   // red
