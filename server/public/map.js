@@ -66,13 +66,33 @@ const zoom = d3.zoom()
   .extent([[0, 0], [width, height]])          // 🔥 viewport fix
   .on("zoom", (event) => {
     g.attr("transform", event.transform);
-  });*/
+  });
   const zoom = d3.zoom()
   .scaleExtent([1, 6])
   .translateExtent([
     [-width, -height], 
     [width * 2, height * 2]
   ])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
+  });*/
+  const zoom = d3.zoom()
+  .scaleExtent([1, 6])
+  .filter((event) => {
+
+    // ❌ block single touch drag
+    if (event.type === "touchstart" && event.touches.length === 1) {
+      return false;
+    }
+
+    // ✔️ allow pinch zoom
+    if (event.type === "touchstart" && event.touches.length === 2) {
+      return true;
+    }
+
+    // ✔️ allow mouse drag / ctrl zoom
+    return event.type !== "wheel" || event.ctrlKey;
+  })
   .on("zoom", (event) => {
     g.attr("transform", event.transform);
   });
