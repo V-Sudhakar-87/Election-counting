@@ -2,35 +2,7 @@ const BASE_URL = window.location.origin;
 const API = BASE_URL + "/api/results";
 const socket = io(BASE_URL);
 // LANGUAGE TOGGLE
-/*const dropdown = document.getElementById("langDropdown");
 
-// OPEN / CLOSE
-document.getElementById("translateBtn").onclick = () => {
-  dropdown.style.display =
-    dropdown.style.display === "block" ? "none" : "block";
-};
-
-// CLOSE OUTSIDE CLICK
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".translate-box")) {
-    dropdown.style.display = "none";
-  }
-});
-
-// LANGUAGE CHANGE
-function setLang(lang) {
-  dropdown.style.display = "none";
-
-  if (lang === "ta") {
-    document.getElementById("titleText").innerText = "தேர்தல் 2026";
-    document.getElementById("subText").innerText = "நேரலை எண்ணிக்கை";
-    document.getElementById("translateBtn").innerText = "🌐 ";
-  } else {
-    document.getElementById("titleText").innerText = "Election 2026";
-    document.getElementById("subText").innerText = "Live Counting";
-    document.getElementById("translateBtn").innerText = "🌐";
-  }
-}*/
 const customFix = {
   "டிவிகே": "தவெக",
   "என்.டி.கே": "நா.த.க",
@@ -76,7 +48,8 @@ const customFix = {
 "போலர்":"போலூர்",
 "கீழ் பெரம்பத்தூர்":"கில்பென்னத்தூர்",
 "கட்டுமன்னார்கோயில்(SC)":"காட்டுமன்னார்கோயில் (SC)",
-"வேதரண்யம்":"வேதாரண்யம்",
+"வேதரண்யம்":"வேதாரண்யம்"
+/*
 "எம்":"M",
 "ஆர்":"R",
 "ஜே":"J",
@@ -105,7 +78,7 @@ const customFix = {
 "தச்சாய்":"தச்சை",
 "பிண்டியன்":"பாண்டியன்",
 "எசக்கி":"இசக்கி"
-
+*/
 };
 
 
@@ -132,35 +105,7 @@ if (lang === "ta") {
 
 let currentLang = localStorage.getItem("lang") || "ta";
 
-/*document.getElementById("translateBtn").onclick = () => {
-  
 
- if (currentLang === "en") {
-    // 👉 English → Tamil
-    currentLang = "ta";
-    localStorage.setItem("lang", "ta");
-
-    document.cookie = "googtrans=/auto/ta; path=/";
-    location.reload();
-
-  } else {
-    // 👉 Tamil → ORIGINAL English
-    currentLang = "en";
-    localStorage.setItem("lang", "en");
-    stopTamilFix();
-    document.cookie =
-      "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    location.reload();
-  }
-  updateSwitchUI();
-
-  hideGoogleBar();
-  setInterval(() => {
-  if (localStorage.getItem("lang") === "ta") {
-    hideGoogleBar();
-  }
-}, 1000);
-};*/
 document.getElementById("translateBtn").onclick = (e) => {
   e.preventDefault(); // 🔥 block click
   return false;

@@ -1171,11 +1171,42 @@ body.light .map-tooltip {
 }
 .map-search-box {
   position: relative;
-  width: 600px;        /* 🔥 set your size */
-  margin: auto;    /* 🔥 VERY IMPORTANT */
+  width: 600px;
+  margin: auto;
 }
+
 .map-search-box input {
   width: 100%;
+  padding: 12px 40px 12px 15px; /* 🔥 right space for icon */
+
+  border-radius: 30px;
+  border: 1px solid #ddd;
+
+  outline: none;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);  /* 🔥 shadow */
+
+  transition: 0.3s;
+}
+
+/* 🔥 hover / focus glow */
+.map-search-box input:focus {
+  border-color: orange;
+  box-shadow: 0 8px 22px rgba(255,165,0,0.4);
+}
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: #888;
+  font-size: 14px;
+}
+body:not(.light) .map-search-box input {
+  background: #1f2937;
+  color: white;
+  border: 1px solid #333;
 }
 /* item */
 .search-item {
