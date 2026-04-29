@@ -2,14 +2,11 @@
 
 console.log("🔥 map.js loaded");
 
-// ==========================
-// CHECK TOPO LOAD
-// ==========================
 if (!tnMapTopo || !tnMapTopo.objects) {
   console.error("❌ TopoJSON not loaded properly");
 }
 
-console.log("TOPO OBJECTS:", tnMapTopo.objects);
+//console.log("TOPO OBJECTS:", tnMapTopo.objects);
 
 // ==========================
 // SVG SETUP
@@ -28,7 +25,7 @@ const geoData = topojson.feature(
   tnMapTopo.objects["tn_ac_2021"]
 );
 
-console.log("🗺️ GEO SAMPLE:", geoData.features[0].properties);
+//console.log("🗺️ GEO SAMPLE:", geoData.features[0].properties);
 
 // ==========================
 // PROJECTION
@@ -273,21 +270,7 @@ const specialACMap = {
   178: "gandarvakkottai",
   231:"colachal"
 };
-// 🔥 STRICT MATCH (FOR COLOR ONLY)
-/*function findConstituencyStrict(mapName) {
 
-  let normMap = normalize(mapName);
-
-  // 🔥 fix only special cases
-  if (specialNameFix[normMap]) {
-    normMap = normalize(specialNameFix[normMap]);
-  }
-  
-
-  return constituencyData.find(
-    c => normalize(c.name) === normMap
-  );
-}*/
 function findConstituencyStrict(mapName) {
 
   let normMap = normalize(mapName);
@@ -309,8 +292,8 @@ function findConstituencyStrict(mapName) {
     );
 
     if (!east && !west) return null;
-    console.log("EAST:", east?.candidates.length);
-console.log("WEST:", west?.candidates.length);
+   // console.log("EAST:", east?.candidates.length);
+   //console.log("WEST:", west?.candidates.length);
     return {
       name: "Tiruchirappalli (East + West)",
       candidates: [
@@ -361,47 +344,7 @@ function findConstituency(mapName) {
     );
   });
 }
-/*function findConstituency(mapName) {
 
-  const normMap = normalize(mapName);
-
-  // 🔥 SPECIAL CASE — Tiruchirapalli merge
-  if (normMap.includes("tiruchirappalli")) {
-  return getMergedTrichy(); // 🔥 use common
-}
-
-  // 🔥 EXISTING LOGIC (UNCHANGED)
-  return constituencyData.find(c => {
-    const normDB = normalize(c.name);
-
-    return (
-      normDB === normMap ||          
-      normDB.includes(normMap) ||    
-      normMap.includes(normDB)       
-    );
-  });
-}
-
-function getMergedTrichy() {
-
-  const east = constituencyData.find(c =>
-    normalize(c.name).includes("tiruchirappallieast")
-  );
-
-  const west = constituencyData.find(c =>
-    normalize(c.name).includes("tiruchirappalliwest")
-  );
-
-  if (!east && !west) return null;
-
-  return {
-    name: "Tiruchirappalli (East + West)",
-    candidates: [
-      ...(east?.candidates || []),
-      ...(west?.candidates || [])
-    ]
-  };
-}*/
 
 // ==========================
 // FIND LEADER 🔥
@@ -523,14 +466,14 @@ function handleClick(d) {
     c => normalize(c.name) === normalize(mapName)
   );*/
   const cons = findConstituencyStrict(mapName);
-  console.log(d);
+  //console.log(d);
 
   if (!cons) {
-    console.log("❌ CLICK FAIL:", mapName);
+    //console.log("❌ CLICK FAIL:", mapName);
     return;
   }
 
-  console.log("✅ CLICK:", cons.name);
+ // console.log("✅ CLICK:", cons.name);
 
   showPopup(cons);
 }
