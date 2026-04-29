@@ -580,6 +580,22 @@ body.light .status {
   }
 
 }
+@media (max-width: 600px) {
+
+  .cm-grid {
+    display: grid !important;              /* 🔥 flex → grid */
+    grid-template-columns: repeat(2, 1fr); /* 🔥 2 per row */
+    gap: 15px;
+
+    overflow-x: hidden !important;         /* ❌ no scroll */
+  }
+
+  .cm-card {
+    width: 100% !important;   /* 🔥 full width inside grid */
+    min-width: unset;         /* ❌ remove scroll behavior */
+  }
+
+}
 
 /* 🔥 PARTY ROW ALIGN */
 .party-row {
