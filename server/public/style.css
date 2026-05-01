@@ -861,7 +861,7 @@ body.light .map-area {
    display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
 }
 body:not(.light) .map-area {
   background: #111827;
@@ -1911,5 +1911,46 @@ body:not(.light) .winner-card button {
 @keyframes fall {
   to {
     transform: translateY(100vh) rotate(360deg);
+  }
+}
+/* 🔹 DEFAULT (DESKTOP) */
+.map-instruction {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+
+  margin-bottom: 6px;
+  white-space: nowrap;
+ 
+}
+
+/* 🔹 LIGHT MODE */
+body.light .map-instruction {
+  color: rgba(0,0,0,0.5);
+}
+
+/* 🔥 MOBILE VERSION */
+@media (max-width: 768px) {
+
+  .map-instruction {
+    position: fixed !important;
+    bottom: -150px;
+    left: 0;
+    width: 100%;
+   
+    display: block !important;   /* 🔥 MUST */
+
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+
+    text-align: center;
+    padding: 12px;
+
+    font-size: 12px !important;
+    font-weight: 500;
+
+    z-index: 99999;   /* 🔥 above everything */
+  }
+    .map-legend div:not(.map-instruction) {
+    font-size: 0;
   }
 }
