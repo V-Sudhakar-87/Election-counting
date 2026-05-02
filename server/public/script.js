@@ -529,7 +529,7 @@ leaders.sort((a, b) => {
     return `
       <div class="cm-card">
 
-        <div class="badge">${l.alliance}</div>
+        <div class="badge notranslate" translate="no">${l.alliance}</div>
         
         <img src="${l.img}" class="cm-img">
         
