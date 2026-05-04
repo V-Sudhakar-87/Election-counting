@@ -530,7 +530,7 @@ const allianceCM = {
   OTHERS: "IND"
 };
 
-function renderCM(data, partyData) {
+function renderCM(data, partyLeadCount) {
 
   const grid = document.getElementById("cmGrid");
   grid.innerHTML = ""; 
