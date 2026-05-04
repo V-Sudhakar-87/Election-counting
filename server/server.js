@@ -131,7 +131,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-
+app.use(express.static(path.join(__dirname, "public")));
 // 🔥 CONFIG
 const DATA_URL =
   "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
