@@ -290,7 +290,7 @@ const allianceMembers = {
 };
 let RESULT_MODE = false;// 🔥 change to true when result declared
 let firstLoadDone = false; 
-async function loadData() {
+/*async function loadData() {
   try {
     if (!firstLoadDone) {
       document.getElementById("cmLoading").style.display = "block";
@@ -300,16 +300,22 @@ async function loadData() {
     const list = data.constituencies || data;
 
     updateCandidateCount(data.constituencies);
-    renderCM(list ,data.partyLeadCount);
+    renderCM(list ,partyData);
     if (!firstLoadDone) {
       document.getElementById("cmLoading").style.display = "none";
       firstLoadDone = true;
     }
     updateLeadingParty(data);
-    const partyData = buildPartyCountFromData(data.constituencies);
+   /* const partyData = buildPartyCountFromData(data.constituencies);
 renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
-renderAllianceChart(allianceData);  
+renderAllianceChart(allianceData); 
+const partyData = buildPartyCountFromData(data.constituencies);
+renderPartyChart(partyData);
+
+// 🔥 IMPORTANT CHANGE HERE
+const allianceData = buildAllianceCount(partyData);
+renderAllianceChart(allianceData); 
  if (RESULT_MODE) {
 
       const topAlliance = Object.keys(allianceData)
@@ -326,6 +332,70 @@ renderAllianceChart(allianceData);
       }
     }
 
+
+  } catch (err) {
+    console.log("API ERROR:", err);
+  }
+}*/
+async function loadData() {
+  try {
+
+    // 🔥 show loading only first time
+    if (!firstLoadDone) {
+      document.getElementById("cmLoading").style.display = "block";
+    }
+
+    // 🔥 fetch data
+    const res = await fetch(API);
+    const data = await res.json();
+    const list = data.constituencies || data;
+
+    // 🔥 calculate from leading:true ONLY
+    const partyData = buildPartyCountFromData(list);
+
+    // 🔥 CM render (IMPORTANT - use partyData)
+    renderCM(list, partyData);
+
+    // 🔥 remove loading immediately after render
+    if (!firstLoadDone) {
+      document.getElementById("cmLoading").style.display = "none";
+      firstLoadDone = true;
+    }
+
+    // 🔥 update stats
+    updateCandidateCount(list);
+
+    // 🔥 party chart
+    renderPartyChart(partyData);
+
+    // 🔥 alliance chart (from partyData)
+    const allianceData = buildAllianceCount(partyData);
+    renderAllianceChart(allianceData);
+
+    // 🔥 top leading party text (FIXED)
+    updateLeadingParty({
+      allianceLeadCount: allianceData
+    });
+
+    // 🔥 winner popup
+    if (RESULT_MODE) {
+
+      const topAlliance = Object.keys(allianceData)
+        .sort((a, b) => allianceData[b] - allianceData[a])[0];
+
+      const leader = getLeaderFromAlliance(topAlliance);
+
+      if (leader && !sessionStorage.getItem("winnerShown")) {
+
+        showWinnerPopup(leader);
+
+        setTimeout(() => {
+          startConfetti();
+        }, 200);
+
+        sessionStorage.setItem("winnerShown", "true");
+      }
+    }
 
   } catch (err) {
     console.log("API ERROR:", err);
@@ -706,6 +776,33 @@ function renderAllianceChart(allianceLeadCount) {
     </div>
   `).join("");
 }
+function buildPartyCountFromData(constituencies) {
+
+  const partyCount = {};
+
+  // 🔥 fast loop
+  for (let i = 0; i < constituencies.length; i++) {
+
+    const cons = constituencies[i];
+
+    // 🔥 ONLY leading (no vote fallback)
+    const leader = cons.candidates.find(c => c.leading === true);
+
+    // ❌ no leading → skip
+    if (!leader) continue;
+
+    const party = leader.party;
+
+    // 🔥 increment count
+    if (partyCount[party]) {
+      partyCount[party]++;
+    } else {
+      partyCount[party] = 1;
+    }
+  }
+
+  return partyCount;
+}
 function buildAllianceCount(partyLeadCount) {
 
   const allianceCount = {
@@ -718,36 +815,12 @@ function buildAllianceCount(partyLeadCount) {
   for (let alliance in allianceMembers) {
 
     allianceMembers[alliance].forEach(party => {
-      allianceCount[alliance] += partyLeadCount[party] || 0;
+      allianceCount[alliance] += partyLeadCount?.[party] || 0;
     });
 
   }
 
   return allianceCount;
-}
-function buildPartyCountFromData(constituencies) {
-
-  const partyCount = {};
-
-  constituencies.forEach(cons => {
-
-    const sorted = [...cons.candidates].sort((a, b) => b.votes - a.votes);
-
-    const leader = sorted[0];
-
-    // 🔥 IMPORTANT FIX
-    if (!leader || leader.votes === 0) return;
-
-    const party = leader.party;
-
-    if (!partyCount[party]) {
-      partyCount[party] = 0;
-    }
-
-    partyCount[party]++;
-  });
-
-  return partyCount;
 }
 
 
