@@ -289,7 +289,16 @@ const io = new Server(server, {
 });
 
 app.set("io", io);
+async function resetAllLeading() {
+  console.log("🧹 Resetting all leading flags...");
 
+  await Constituency.updateMany(
+    {},
+    { $set: { "candidates.$[].leading": false } }
+  );
+
+  console.log("✅ All leading set to false");
+}
 // ==========================
 // 🔥 DB CONNECT
 // ==========================
@@ -297,7 +306,7 @@ mongoose.connect(process.env.MONGO_URI, { dbName: "election_db" })
   .then(() => {
 
     console.log("✅ MongoDB Connected");
-
+     resetAllLeading();
     server.listen(process.env.PORT || 5000, () => {
       console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
     });
