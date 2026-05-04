@@ -123,6 +123,7 @@ mongoose.connect(process.env.MONGO_URI,{ dbName: "election_db" })
 require("dotenv").config();
 
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const axios = require("axios");
