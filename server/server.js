@@ -252,36 +252,47 @@ async function fetchAndUpdate() {
       }
 
       // 🔥 RESET
-      doc.candidates.forEach(c => c.leading = false);
+      //doc.candidates.forEach(c => c.leading = false);
 
-      // 🔥 STEP 1: STRICT NAME MATCH
-      let leader = doc.candidates.find(c =>
-        normalize(c.name) === normalize(candidateName)
-      );
+    // 🔥 STEP 1: FIND LEADER FIRST
+// 🔥 STEP 1: STRICT NAME MATCH
+let leader = doc.candidates.find(c =>
+  normalize(c.name) === normalize(candidateName)
+);
 
-      // 🔥 STEP 2: LOOSE MATCH (safe fallback)
-      if (!leader) {
-        leader = doc.candidates.find(c =>
-          normalize(c.name).includes(normalize(candidateName))
-        );
-      }
+// 🔥 STEP 2: VALIDATE PARTY ALSO
+if (leader && normalize(leader.party) !== normalize(party)) {
+  console.log(`⚠️ Party mismatch → SKIP ${candidateName}`);
+  leader = null;
+}
 
-      // 🔥 STEP 3: PARTY fallback (final safety)
-      if (!leader) {
-        leader = doc.candidates.find(c =>
-          normalize(c.party) === normalize(party)
-        );
-      }
+// 🔥 STEP 3: SAFE PARTY FALLBACK
+if (!leader) {
 
-      // 🔥 SET LEADER
-      if (leader) {
-        leader.leading = true;
-        console.log(`✅ ${doc.name} → ${leader.name}`);
-      } else {
-        console.log(`❌ NO MATCH → AC:${ac_no} | ${candidateName}`);
-      }
+  const matches = doc.candidates.filter(c =>
+    normalize(c.party) === normalize(party)
+  );
 
-      await doc.save();
+  if (matches.length === 1) {
+    leader = matches[0];
+  }
+}
+
+// 🔥 STEP 4: FINAL UPDATE
+if (leader) {
+
+  doc.candidates.forEach(c => c.leading = false);
+  leader.leading = true;
+
+  console.log(`✅ ${doc.name} → ${leader.name}`);
+
+  await doc.save();
+
+} else {
+
+  console.log(`❌ SKIPPED SAFE → AC:${ac_no}`);
+
+}
     }
 
     console.log("🔥 DB UPDATED");

@@ -583,13 +583,21 @@ function renderCM(data, partyLeadCount) {
 
   // 🔥 CALCULATE PARTY VOTES
   
-leaders.sort((a, b) => {
+/*leaders.sort((a, b) => {
   const aCount = partyLeadCount?.[a.party] || 0;
   const bCount = partyLeadCount?.[b.party] || 0;
   return bCount - aCount; // 🔥 highest first
-});
+});*/
   
-
+const manualOrder = {
+  "DMK": 1,
+  "AIADMK": 2,
+  "NTK": 3,
+  "TVK": 4
+};
+leaders.sort((a, b) => {
+  return (manualOrder[a.party] || 999) - (manualOrder[b.party] || 999);
+});
   // 🔥 RENDER
   grid.innerHTML = leaders.map(l => {
 
