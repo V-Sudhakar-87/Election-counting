@@ -424,7 +424,7 @@ function getLeaderFromAlliance(alliance) {
 
   const map = {
     SPA: {
-       name: "M.K.Stalin",
+      name: "M.K.Stalin",
       party: "DMK",
       alliance: "SPA",
       image: "image/mk-stalin.jpg"
@@ -530,7 +530,7 @@ const allianceCM = {
   OTHERS: "IND"
 };
 
-function renderCM(data, partyLeadCount) {
+function renderCM(data, partyData) {
 
   const grid = document.getElementById("cmGrid");
   grid.innerHTML = ""; 

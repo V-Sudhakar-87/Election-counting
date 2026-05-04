@@ -227,6 +227,24 @@ async function fetchAndUpdate() {
       const candidateName = item[3];
 
       const doc = await Constituency.findOne({ ac_no });
+      // 🔥 DEBUG TABLE
+ console.log("---- MATCH CHECK ----");
+
+  doc.candidates.forEach(c => {
+
+    const nameMatch =
+      normalize(c.name) === normalize(candidateName);
+
+    const partyMatch =
+      normalize(c.party) === normalize(party);
+
+    console.log({
+      DB_Name: c.name,
+      NameMatch: nameMatch,
+      PartyMatch: partyMatch
+    });
+
+  });
 
       if (!doc) {
         console.log(`❌ Missing AC:${ac_no}`);
