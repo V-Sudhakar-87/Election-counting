@@ -132,12 +132,15 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
+
+// 🔥 STATIC
 app.use(express.static(path.join(__dirname, "public")));
+
 // 🔥 CONFIG
 const DATA_URL =
   "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
 
-const FETCH_INTERVAL = "*/3 * * * *"; // every 3 mins
+const FETCH_INTERVAL = "*/3 * * * *";
 
 const Constituency = require("./models/constituencyModel");
 
@@ -145,16 +148,16 @@ const Constituency = require("./models/constituencyModel");
 const normalize = (str) =>
   str?.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// MIDDLEWARE
+// 🔥 MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-// ROUTES
+// 🔥 ROUTES
 const electionRoutes = require("./routes/electionRoutes");
 app.use("/api", electionRoutes);
 
 // ==========================
-// 🔥 FETCH WITH RETRY
+// 🔥 FETCH WITH RETRY (403 SAFE)
 // ==========================
 async function fetchECIData(retries = 3) {
   try {
@@ -162,7 +165,7 @@ async function fetchECIData(retries = 3) {
       timeout: 10000,
       headers: {
         "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json",
+        "Accept": "application/json, text/plain, */*",
         "Referer": "https://results.eci.gov.in/",
         "Origin": "https://results.eci.gov.in"
       }
@@ -172,13 +175,14 @@ async function fetchECIData(retries = 3) {
 
   } catch (err) {
 
+    console.log("⚠️ ECI blocked (retrying)");
+
     if (retries > 0) {
-      console.log(`⚠️ Retry... (${retries})`);
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 3000));
       return fetchECIData(retries - 1);
     }
 
-    throw err;
+    return null; // 🔥 safe fail
   }
 }
 
@@ -200,6 +204,13 @@ async function fetchAndUpdate() {
     console.log("🔥 Fetching ECI data...");
 
     const raw = await fetchECIData();
+
+    // 🔥 IMPORTANT FIX (403 safe)
+    if (!raw) {
+      console.log("❌ Skip update (ECI blocked)");
+      return;
+    }
+
     const data = raw?.S22?.chartData;
 
     if (!Array.isArray(data)) {
@@ -225,16 +236,22 @@ async function fetchAndUpdate() {
       // 🔥 RESET
       doc.candidates.forEach(c => c.leading = false);
 
-      // 🔥 BEST METHOD (PARTY BASE - MOST RELIABLE)
+      // 🔥 STEP 1: STRICT NAME MATCH
       let leader = doc.candidates.find(c =>
-        normalize(c.party) === normalize(party)
+        normalize(c.name) === normalize(candidateName)
       );
 
-      // 🔥 OPTIONAL NAME MATCH (backup)
+      // 🔥 STEP 2: LOOSE MATCH (safe fallback)
       if (!leader) {
         leader = doc.candidates.find(c =>
-          normalize(c.name).includes(normalize(candidateName)) ||
-          normalize(candidateName).includes(normalize(c.name))
+          normalize(c.name).includes(normalize(candidateName))
+        );
+      }
+
+      // 🔥 STEP 3: PARTY fallback (final safety)
+      if (!leader) {
+        leader = doc.candidates.find(c =>
+          normalize(c.party) === normalize(party)
         );
       }
 
@@ -243,7 +260,7 @@ async function fetchAndUpdate() {
         leader.leading = true;
         console.log(`✅ ${doc.name} → ${leader.name}`);
       } else {
-        console.log(`❌ NO MATCH → AC:${ac_no}`);
+        console.log(`❌ NO MATCH → AC:${ac_no} | ${candidateName}`);
       }
 
       await doc.save();
@@ -251,7 +268,7 @@ async function fetchAndUpdate() {
 
     console.log("🔥 DB UPDATED");
 
-    // 🔥 SOCKET EMIT
+    // 🔥 SOCKET UPDATE
     const io = app.get("io");
     io.emit("votesUpdated");
 
