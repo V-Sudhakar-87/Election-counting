@@ -290,7 +290,7 @@ const allianceMembers = {
 };
 let RESULT_MODE = false;// 🔥 change to true when result declared
 let firstLoadDone = false; 
-/*async function loadData() {
+async function loadData() {
   try {
     if (!firstLoadDone) {
       document.getElementById("cmLoading").style.display = "block";
@@ -300,22 +300,16 @@ let firstLoadDone = false;
     const list = data.constituencies || data;
 
     updateCandidateCount(data.constituencies);
-    renderCM(list ,partyData);
+    renderCM(list ,data.partyLeadCount);
     if (!firstLoadDone) {
       document.getElementById("cmLoading").style.display = "none";
       firstLoadDone = true;
     }
     updateLeadingParty(data);
-   /* const partyData = buildPartyCountFromData(data.constituencies);
+    const partyData = buildPartyCountFromData(data.constituencies);
 renderPartyChart(partyData);
     const allianceData = buildAllianceCount(data.partyLeadCount);
-renderAllianceChart(allianceData); 
-const partyData = buildPartyCountFromData(data.constituencies);
-renderPartyChart(partyData);
-
-// 🔥 IMPORTANT CHANGE HERE
-const allianceData = buildAllianceCount(partyData);
-renderAllianceChart(allianceData); 
+renderAllianceChart(allianceData);  
  if (RESULT_MODE) {
 
       const topAlliance = Object.keys(allianceData)
@@ -332,70 +326,6 @@ renderAllianceChart(allianceData);
       }
     }
 
-
-  } catch (err) {
-    console.log("API ERROR:", err);
-  }
-}*/
-async function loadData() {
-  try {
-
-    // 🔥 show loading only first time
-    if (!firstLoadDone) {
-      document.getElementById("cmLoading").style.display = "block";
-    }
-
-    // 🔥 fetch data
-    const res = await fetch(API);
-    const data = await res.json();
-    const list = data.constituencies || data;
-
-    // 🔥 calculate from leading:true ONLY
-    const partyData = buildPartyCountFromData(list);
-
-    // 🔥 CM render (IMPORTANT - use partyData)
-    renderCM(list, partyData);
-
-    // 🔥 remove loading immediately after render
-    if (!firstLoadDone) {
-      document.getElementById("cmLoading").style.display = "none";
-      firstLoadDone = true;
-    }
-
-    // 🔥 update stats
-    updateCandidateCount(list);
-
-    // 🔥 party chart
-    renderPartyChart(partyData);
-
-    // 🔥 alliance chart (from partyData)
-    const allianceData = buildAllianceCount(partyData);
-    renderAllianceChart(allianceData);
-
-    // 🔥 top leading party text (FIXED)
-    updateLeadingParty({
-      allianceLeadCount: allianceData
-    });
-
-    // 🔥 winner popup
-    if (RESULT_MODE) {
-
-      const topAlliance = Object.keys(allianceData)
-        .sort((a, b) => allianceData[b] - allianceData[a])[0];
-
-      const leader = getLeaderFromAlliance(topAlliance);
-
-      if (leader && !sessionStorage.getItem("winnerShown")) {
-
-        showWinnerPopup(leader);
-
-        setTimeout(() => {
-          startConfetti();
-        }, 200);
-
-        sessionStorage.setItem("winnerShown", "true");
-      }
-    }
 
   } catch (err) {
     console.log("API ERROR:", err);
@@ -424,7 +354,7 @@ function getLeaderFromAlliance(alliance) {
 
   const map = {
     SPA: {
-      name: "M.K.Stalin",
+       name: "M.K.Stalin",
       party: "DMK",
       alliance: "SPA",
       image: "image/mk-stalin.jpg"
@@ -583,21 +513,13 @@ function renderCM(data, partyLeadCount) {
 
   // 🔥 CALCULATE PARTY VOTES
   
-/*leaders.sort((a, b) => {
+leaders.sort((a, b) => {
   const aCount = partyLeadCount?.[a.party] || 0;
   const bCount = partyLeadCount?.[b.party] || 0;
   return bCount - aCount; // 🔥 highest first
-});*/
-  
-const manualOrder = {
-  "DMK": 1,
-  "AIADMK": 2,
-  "NTK": 3,
-  "TVK": 4
-};
-leaders.sort((a, b) => {
-  return (manualOrder[a.party] || 999) - (manualOrder[b.party] || 999);
 });
+  
+
   // 🔥 RENDER
   grid.innerHTML = leaders.map(l => {
 
@@ -788,26 +710,27 @@ function buildPartyCountFromData(constituencies) {
 
   const partyCount = {};
 
-  // 🔥 fast loop
-  for (let i = 0; i < constituencies.length; i++) {
+  constituencies.forEach(cons => {
 
-    const cons = constituencies[i];
+    // 🔥 FIX: use leading instead of votes
+    let leader = cons.candidates.find(c => c.leading);
 
-    // 🔥 ONLY leading (no vote fallback)
-    const leader = cons.candidates.find(c => c.leading === true);
+    // fallback (if no leading found)
+    if (!leader) {
+      const sorted = [...cons.candidates].sort((a, b) => b.votes - a.votes);
+      leader = sorted[0];
+    }
 
-    // ❌ no leading → skip
-    if (!leader) continue;
+    if (!leader) return;
 
     const party = leader.party;
 
-    // 🔥 increment count
-    if (partyCount[party]) {
-      partyCount[party]++;
-    } else {
-      partyCount[party] = 1;
+    if (!partyCount[party]) {
+      partyCount[party] = 0;
     }
-  }
+
+    partyCount[party]++;
+  });
 
   return partyCount;
 }
