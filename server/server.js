@@ -133,21 +133,22 @@ const { Server } = require("socket.io");
 const app = express();
 
 // 🔥 CONFIG
-const DATA_URL = "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
-const FETCH_INTERVAL = "*/3 * * * *"; // 🔥 every 3 mins (safe)
+const DATA_URL =
+  "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
 
-// 🔥 MODEL
+const FETCH_INTERVAL = "*/3 * * * *"; // every 3 mins
+
 const Constituency = require("./models/constituencyModel");
 
 // 🔥 NORMALIZE
 const normalize = (str) =>
   str?.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// 🔥 MIDDLEWARE
+// MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-// 🔥 ROUTES
+// ROUTES
 const electionRoutes = require("./routes/electionRoutes");
 app.use("/api", electionRoutes);
 
@@ -159,8 +160,8 @@ async function fetchECIData(retries = 3) {
     const res = await axios.get(DATA_URL, {
       timeout: 10000,
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "application/json, text/plain, */*",
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json",
         "Referer": "https://results.eci.gov.in/",
         "Origin": "https://results.eci.gov.in"
       }
@@ -181,7 +182,7 @@ async function fetchECIData(retries = 3) {
 }
 
 // ==========================
-// 🔥 MAIN PROCESS
+// 🔥 MAIN UPDATE LOGIC
 // ==========================
 let isRunning = false;
 
@@ -198,11 +199,10 @@ async function fetchAndUpdate() {
     console.log("🔥 Fetching ECI data...");
 
     const raw = await fetchECIData();
-
     const data = raw?.S22?.chartData;
 
     if (!Array.isArray(data)) {
-      console.log("❌ Invalid ECI data");
+      console.log("❌ Invalid data");
       return;
     }
 
@@ -216,33 +216,41 @@ async function fetchAndUpdate() {
 
       const doc = await Constituency.findOne({ ac_no });
 
-      if (!doc) continue;
+      if (!doc) {
+        console.log(`❌ Missing AC:${ac_no}`);
+        continue;
+      }
 
       // 🔥 RESET
       doc.candidates.forEach(c => c.leading = false);
 
-      // 🔥 MATCH NAME
+      // 🔥 BEST METHOD (PARTY BASE - MOST RELIABLE)
       let leader = doc.candidates.find(c =>
-        normalize(c.name) === normalize(candidateName)
+        normalize(c.party) === normalize(party)
       );
 
-      // 🔥 FALLBACK PARTY
+      // 🔥 OPTIONAL NAME MATCH (backup)
       if (!leader) {
         leader = doc.candidates.find(c =>
-          normalize(c.party) === normalize(party)
+          normalize(c.name).includes(normalize(candidateName)) ||
+          normalize(candidateName).includes(normalize(c.name))
         );
       }
 
+      // 🔥 SET LEADER
       if (leader) {
         leader.leading = true;
+        console.log(`✅ ${doc.name} → ${leader.name}`);
+      } else {
+        console.log(`❌ NO MATCH → AC:${ac_no}`);
       }
 
       await doc.save();
     }
 
-    console.log("✅ DB Updated");
+    console.log("🔥 DB UPDATED");
 
-    // 🔥 SOCKET UPDATE
+    // 🔥 SOCKET EMIT
     const io = app.get("io");
     io.emit("votesUpdated");
 
@@ -279,7 +287,7 @@ mongoose.connect(process.env.MONGO_URI, { dbName: "election_db" })
     // 🔥 FIRST RUN
     fetchAndUpdate();
 
-    // 🔥 CRON
+    // 🔥 CRON RUN
     cron.schedule(FETCH_INTERVAL, fetchAndUpdate);
 
   })
