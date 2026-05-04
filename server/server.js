@@ -122,125 +122,140 @@ mongoose.connect(process.env.MONGO_URI,{ dbName: "election_db" })
   .catch(err => console.log(err));*/
 require("dotenv").config();
 
-const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const axios = require("axios");
 const cron = require("node-cron");
-
 const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
 
 // 🔥 CONFIG
-const ENABLE_FETCH = true;
-const UPDATE_DB = true;
+const DATA_URL = "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
+const FETCH_INTERVAL = "*/3 * * * *"; // 🔥 every 3 mins (safe)
 
-// 🔥 ECI LIVE URL
-const DATA_URL =
-  "https://results.eci.gov.in/ResultAcGenMay2026/election-json-S22-live.json";
-
+// 🔥 MODEL
 const Constituency = require("./models/constituencyModel");
 
-// 🔥 NORMALIZE FUNCTION
+// 🔥 NORMALIZE
 const normalize = (str) =>
   str?.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// Middleware
+// 🔥 MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// 🔥 ROUTES
 const electionRoutes = require("./routes/electionRoutes");
 app.use("/api", electionRoutes);
 
-// Static
-app.use(express.static(path.join(__dirname, "public")));
-
-// 🔥 MAIN FETCH FUNCTION
-const fetchAndProcess = async () => {
+// ==========================
+// 🔥 FETCH WITH RETRY
+// ==========================
+async function fetchECIData(retries = 3) {
   try {
-    console.log("⏳ Fetching ECI data...");
-
     const res = await axios.get(DATA_URL, {
-      headers: { "User-Agent": "Mozilla/5.0" }
+      timeout: 10000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://results.eci.gov.in/",
+        "Origin": "https://results.eci.gov.in"
+      }
     });
 
-    const raw = res.data;
+    return res.data;
+
+  } catch (err) {
+
+    if (retries > 0) {
+      console.log(`⚠️ Retry... (${retries})`);
+      await new Promise(r => setTimeout(r, 2000));
+      return fetchECIData(retries - 1);
+    }
+
+    throw err;
+  }
+}
+
+// ==========================
+// 🔥 MAIN PROCESS
+// ==========================
+let isRunning = false;
+
+async function fetchAndUpdate() {
+
+  if (isRunning) {
+    console.log("⏳ Skipping (already running)");
+    return;
+  }
+
+  isRunning = true;
+
+  try {
+    console.log("🔥 Fetching ECI data...");
+
+    const raw = await fetchECIData();
 
     const data = raw?.S22?.chartData;
 
     if (!Array.isArray(data)) {
-      console.log("❌ chartData not found");
+      console.log("❌ Invalid ECI data");
       return;
     }
 
-    console.log(`✅ Total records: ${data.length}`);
+    console.log(`✅ Records: ${data.length}`);
 
-    // 🔥 LOOP ALL DATA
     for (const item of data) {
 
       const party = item[0];
       const ac_no = item[2];
       const candidateName = item[3];
 
-      console.log(`👉 AC:${ac_no} | Party:${party} | Candidate:${candidateName}`);
-
       const doc = await Constituency.findOne({ ac_no });
 
-      if (!doc) {
-        console.log(`❌ DB missing for AC:${ac_no}`);
-        continue;
-      }
+      if (!doc) continue;
 
-      // 🔥 RESET ALL
+      // 🔥 RESET
       doc.candidates.forEach(c => c.leading = false);
 
-      // 🔥 MATCH BY NAME
+      // 🔥 MATCH NAME
       let leader = doc.candidates.find(c =>
         normalize(c.name) === normalize(candidateName)
       );
-
-      if (leader) {
-        console.log(`🟢 NAME MATCH: ${leader.name}`);
-      }
 
       // 🔥 FALLBACK PARTY
       if (!leader) {
         leader = doc.candidates.find(c =>
           normalize(c.party) === normalize(party)
         );
-
-        if (leader) {
-          console.log(`🟡 PARTY MATCH: ${leader.name}`);
-        }
       }
 
-      // 🔥 SET LEADER
       if (leader) {
         leader.leading = true;
-        console.log(`✅ SET LEADING: ${doc.name} → ${leader.name}`);
-      } else {
-        console.log(`❌ NO MATCH FOUND for ${candidateName}`);
       }
 
       await doc.save();
-
-      // 🔥 SOCKET EMIT
-      const io = app.get("io");
-      io.emit("votesUpdated");
     }
 
-    console.log("🔥 UPDATE CYCLE DONE\n");
+    console.log("✅ DB Updated");
+
+    // 🔥 SOCKET UPDATE
+    const io = app.get("io");
+    io.emit("votesUpdated");
 
   } catch (err) {
     console.error("❌ ERROR:", err.message);
+  } finally {
+    isRunning = false;
   }
-};
+}
 
+// ==========================
 // 🔥 SERVER + SOCKET
+// ==========================
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -249,22 +264,23 @@ const io = new Server(server, {
 
 app.set("io", io);
 
+// ==========================
 // 🔥 DB CONNECT
+// ==========================
 mongoose.connect(process.env.MONGO_URI, { dbName: "election_db" })
   .then(() => {
+
     console.log("✅ MongoDB Connected");
 
-    server.listen(process.env.PORT, () => {
-      console.log(`🚀 Server running on port ${process.env.PORT}`);
+    server.listen(process.env.PORT || 5000, () => {
+      console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
     });
 
-    if (ENABLE_FETCH) {
-      fetchAndProcess();
+    // 🔥 FIRST RUN
+    fetchAndUpdate();
 
-      // 🔥 every 1 minute
-      cron.schedule("*/1 * * * *", () => {
-        fetchAndProcess();
-      });
-    }
+    // 🔥 CRON
+    cron.schedule(FETCH_INTERVAL, fetchAndUpdate);
+
   })
   .catch(err => console.log(err));
